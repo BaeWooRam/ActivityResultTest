@@ -1,24 +1,24 @@
-package com.example.activityresulttest
+package com.example.activityresulttest.permission
 
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 
 interface Permission {
     interface Target{
-        fun target(target:AppCompatActivity):Listener
+        fun target(target:AppCompatActivity): Listener
     }
 
     interface Listener{
-        fun setPermissionListener(permissionListener: PermissionListener):Request
+        fun setPermissionListener(permissionListener: PermissionListener): Request
     }
 
-    interface Request:Option{
-        fun request(permissions:Array<String>):Checker
+    interface Request: Option {
+        fun request(permissions:Array<String>): Checker
     }
 
     interface Option{
-        fun setSinglePermissionShowListener(showListener: ShowListener<String>):Request
-        fun setMultiPermissionShowListener(showListener: ShowListener<Array<String>>):Request
+        fun setSinglePermissionShowListener(showListener: ShowListener<String>): Request
+        fun setMultiPermissionShowListener(showListener: ShowListener<Array<String>>): Request
     }
 
     interface Checker{

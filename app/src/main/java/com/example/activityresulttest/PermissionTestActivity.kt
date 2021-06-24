@@ -6,6 +6,8 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import com.example.activityresulttest.permission.Permission
+import com.example.activityresulttest.permission.PermissionChecker
 
 class PermissionTestActivity : AppCompatActivity() {
     private var listener: Permission.PermissionListener? = null
