@@ -46,18 +46,4 @@ class PermissionTestActivity : AppCompatActivity() {
                 .check()
         }
     }
-
-    override fun onStart() {
-        super.onStart()
-        PermissionChecker()
-            .target(this@PermissionTestActivity)
-            .request(arrayOf(
-                Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ))
-            .setPermissionListener(listener!!)
-            .check()
-    }
 }
