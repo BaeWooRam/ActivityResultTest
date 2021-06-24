@@ -16,11 +16,12 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
     private var singlePermissionShowListener: Permission.ShowListener<String>? = null
     private var multiPermissionShowListener: Permission.ShowListener<Array<String>>? = null
 
-    private var permissions: Array<String>? = null
-
     //Launch
     private var launchPermission: ActivityResultLauncher<String>? = null
     private var launchMultiplePermissions: ActivityResultLauncher<Array<String>>? = null
+
+    private var permissions: Array<String>? = null
+    var isGrantPermission:Boolean = false
 
     /**
      * 퍼미션 요청을 위한 Launcher 초기화(필수)
@@ -30,10 +31,13 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
         launchPermission =
             target!!.registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                 Log.d(debugTag, "lunchPermission() result = $it")
-                if (it)
+                if (it){
+                    isGrantPermission = true
                     permissionListener!!.onGrantedPermission()
-                else
+                } else{
+                    isGrantPermission = false
                     permissionListener!!.onDenyPermission(permissions!!)
+                }
             }
 
 
@@ -51,10 +55,13 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
                         denyPermissions.add(entry.key)
                 }
 
-                if (denyPermissions.isEmpty())
+                if (denyPermissions.isEmpty()){
+                    isGrantPermission = true
                     permissionListener!!.onGrantedPermission()
-                else
+                } else{
+                    isGrantPermission = false
                     permissionListener!!.onDenyPermission(denyPermissions.toTypedArray())
+                }
             }
 
         return this@PermissionChecker
@@ -63,7 +70,7 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
     /**
      * 퍼미션이 하나일 때 Launcher 초기화(선택)
      */
-    fun setLaunchSinglePermissions(launcher: ActivityResultLauncher<String>):PermissionChecker{
+    fun setLaunchSinglePermissions(launcher: ActivityResultLauncher<String>): PermissionChecker {
         this@PermissionChecker.launchPermission = launcher
         return this@PermissionChecker
     }
@@ -71,7 +78,7 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
     /**
      * 퍼미션이 다수일 때, Launcher 초기화(선택)
      */
-    fun setLaunchMultiplePermissions(launcher: ActivityResultLauncher<Array<String>>):PermissionChecker{
+    fun setLaunchMultiplePermissions(launcher: ActivityResultLauncher<Array<String>>): PermissionChecker {
         this@PermissionChecker.launchMultiplePermissions = launcher
         return this@PermissionChecker
     }
@@ -91,12 +98,12 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
         this@PermissionChecker.permissionListener = permissionListener
         return this@PermissionChecker
     }
-    
+
     override fun setSinglePermissionShowListener(showListener: Permission.ShowListener<String>): Permission.Request {
         this@PermissionChecker.singlePermissionShowListener = showListener
         return this@PermissionChecker
     }
-    
+
     override fun setMultiPermissionShowListener(showListener: Permission.ShowListener<Array<String>>): Permission.Request {
         this@PermissionChecker.multiPermissionShowListener = showListener
         return this@PermissionChecker
@@ -163,7 +170,7 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
                     requestPermissions
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     Log.d(debugTag, "singleExecute() requestPermission = $requestPermissions")
-
+                    isGrantPermission = true
                     permissionListener!!.onGrantedPermission()
                 }
 
@@ -206,7 +213,10 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
 
             when {
                 //퍼미션 모두 허가일 때
-                requestPermission.isEmpty() -> permissionListener!!.onGrantedPermission()
+                requestPermission.isEmpty() -> {
+                    isGrantPermission = true
+                    permissionListener!!.onGrantedPermission()
+                }
 
                 //퍼미션 거절 시 UI 보여주기
                 target!!.shouldShowRequestPermissionRationale(requestPermission[0]) -> {
