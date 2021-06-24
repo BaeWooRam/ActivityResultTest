@@ -11,7 +11,11 @@ import java.lang.NullPointerException
 class PermissionChecker : Permission.Target, Permission.Listener, Permission.Request {
     private val debugTag: String = javaClass.simpleName
     private var target: AppCompatActivity? = null
+
+    //Event
     private var permissionListener: Permission.PermissionListener? = null
+    private var singlePermissionShowListener: Permission.ShowListener<String>? = null
+    private var multiPermissionShowListener: Permission.ShowListener<Array<String>>? = null
 
     private var permissions: Array<String>? = null
 
@@ -54,18 +58,28 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
         return this@PermissionChecker
     }
 
-    override fun target(target: AppCompatActivity): Permission.Request {
+    override fun target(target: AppCompatActivity): Permission.Listener {
         this@PermissionChecker.target = target
         return this@PermissionChecker
     }
 
-    override fun request(permissions: Array<String>): Permission.Listener {
-        this@PermissionChecker.permissions = permissions
+    override fun setPermissionListener(permissionListener: Permission.PermissionListener): Permission.Request {
+        this@PermissionChecker.permissionListener = permissionListener
         return this@PermissionChecker
     }
 
-    override fun setPermissionListener(permissionListener: Permission.PermissionListener): Permission.Checker {
-        this@PermissionChecker.permissionListener = permissionListener
+    override fun setSinglePermissionShowListener(showListener: Permission.ShowListener<String>): Permission.Request {
+        this@PermissionChecker.singlePermissionShowListener = showListener
+        return this@PermissionChecker
+    }
+
+    override fun setMultiPermissionShowListener(showListener: Permission.ShowListener<Array<String>>): Permission.Request {
+        this@PermissionChecker.multiPermissionShowListener = showListener
+        return this@PermissionChecker
+    }
+
+    override fun request(permissions: Array<String>): Permission.Checker {
+        this@PermissionChecker.permissions = permissions
         return Checker()
     }
 
@@ -114,12 +128,16 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
                     requestPermissions
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     Log.d(debugTag, "singleExecute() requestPermission = $requestPermissions")
+
                     permissionListener!!.onGrantedPermission()
                 }
 
                 //퍼미션 거절 시 UI 보여주기
                 target!!.shouldShowRequestPermissionRationale(requestPermissions) -> {
-                    launchPermission?.launch(requestPermissions)
+                    if(singlePermissionShowListener != null)
+                        singlePermissionShowListener?.showRequestPermissionRationale(requestPermissions, launchPermission!!)
+                    else
+                        launchPermission?.launch(requestPermissions)
                 }
 
                 else -> {
@@ -150,7 +168,10 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
 
                 //퍼미션 거절 시 UI 보여주기
                 target!!.shouldShowRequestPermissionRationale(requestPermission[0]) -> {
-                    launchMultiplePermissions?.launch(permissions)
+                    if(multiPermissionShowListener != null)
+                        multiPermissionShowListener?.showRequestPermissionRationale(permissions!!, launchMultiplePermissions!!)
+                    else
+                        launchMultiplePermissions?.launch(permissions)
                 }
 
                 //퍼미션 비허가
