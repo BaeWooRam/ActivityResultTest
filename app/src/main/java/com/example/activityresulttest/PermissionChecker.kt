@@ -19,6 +19,7 @@ class PermissionChecker : Permission.Target, Permission.Listener, Permission.Req
 
     private var permissions: Array<String>? = null
 
+    //Launch
     private var launchPermission: ActivityResultLauncher<String>? = null
     private var launchMultiplePermissions: ActivityResultLauncher<Array<String>>? = null
 
