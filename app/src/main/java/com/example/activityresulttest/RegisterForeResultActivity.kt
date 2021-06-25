@@ -1,14 +1,10 @@
 package com.example.activityresulttest
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import com.example.activityresulttest.result.MainActivity
 
 class RegisterForeResultActivity : AppCompatActivity() {
     private val debugTag: String = javaClass.simpleName
